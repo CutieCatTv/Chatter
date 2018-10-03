@@ -34,7 +34,7 @@ public class Anmeldung extends JFrame {
         super();
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         int frameWidth = 383;
-        int frameHeight = 310;
+        int frameHeight = 500;
         setSize(frameWidth, frameHeight);
         Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
         int x = (d.width - getSize().width) / 2;
@@ -111,8 +111,15 @@ public class Anmeldung extends JFrame {
     } // end of bAnmelden_ActionPerformed
 
     public void bRegistrieren_ActionPerformed(ActionEvent evt) {
-        // TODO hier Quelltext einf�gen
-
+        String name = (String) JOptionPane.showInputDialog(this, "Raumname eingeben", "Chatroom Name",
+                JOptionPane.PLAIN_MESSAGE);
+        if ((name == null) || (name.length() < 1))
+            return;
+        String pass = (String) JOptionPane.showInputDialog(this, "Raumpasswort eingeben (leer für keins)",
+                "Chatroom Passwort", JOptionPane.PLAIN_MESSAGE);
+        if ((pass == null) || (pass.length() < 1))
+            return;
+        gui.client.registerUser(name, pass);
     } // end of bRegistrieren_ActionPerformed
 
     // Ende Methoden

@@ -14,4 +14,6 @@ interface Interface {
     public void alreadyLoggedInRoom(String roomName);
 
     public void alreadyLoggedInUser(String roomName);
+
+    public void updateRoomList(String[] rooms);
 }
