@@ -1,5 +1,10 @@
 package com.voxldavid.chatter;
 
+/**
+ * Verbindet den Client mit dem Benutzer vor dem Bildschirm und macht die
+ * richtigen Sachen (ruft die richtigen Methoden des Clients auf) wann sie
+ * gemacht werden sollen
+ */
 interface Interface {
     public void loginSuccess(String roomName);
 

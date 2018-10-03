@@ -14,7 +14,16 @@ public class ChatServer extends Server {
     int chatRoomIdCounter;
     int userIdCounter;
     ArrayList<Integer> unusedIds;
+    
+    /**
+     * HashMap zwischen ID eines Raumes und ID der Benutzer welche in diesem Raum
+     * angemeldet sind
+     */
     HashMap<Integer, ArrayList<Integer>> loggedInUsers;
+    /**
+     * HashMap zwischen ID eines Benutzers und IP & Port um Nachrichten an den
+     * Richtigen Client zu schicken
+     */
     HashMap<Integer, String> userIP;
 
     // Verbindung zur Datenbank aufbauen
@@ -88,6 +97,13 @@ public class ChatServer extends Server {
         }
     }
 
+    /**
+     * Kreiert einen neuen Raum in der Datenbank worin sich Benutzer einloggen
+     * können und Nachrichten gespeichert werden
+     * 
+     * @param name
+     * @param pass
+     */
     public void createRoom(String name, String pass) {
         String sql = String.format("SELECT name FROM chatrooms WHERE name='%s';", name);
 
@@ -133,10 +149,21 @@ public class ChatServer extends Server {
         }
     }
 
-    public void destroyRoom(String name, String pass) {
+    /*
+     * public void destroyRoom(String name, String pass) {
+     * 
+     * }
+     */
 
-    }
-
+    /**
+     * Verarbeitet eine neue Nachricht, indem sie in der Datenbank hinzugefügt wird
+     * und an alle Benutzer in dem jeweiligen Raum geschickt wird
+     * 
+     * @param chatRoomName
+     * @param chatRoomPass
+     * @param source
+     * @param message
+     */
     public void receiveChatMessage(String chatRoomName, String chatRoomPass, String source, String message) {
         var l = LocalDateTime.now();
         java.sql.Date dt = new java.sql.Date(l.toInstant(ZoneOffset.UTC).toEpochMilli());
@@ -179,6 +206,14 @@ public class ChatServer extends Server {
         }
     }
 
+    /**
+     * Loggt falls möglich den Client in den gegebenen Benutzer ein
+     * 
+     * @param ip
+     * @param port
+     * @param name
+     * @param pass
+     */
     public void loginUser(String ip, int port, String name, String pass) {
         try (var c = connect()) {
             String sql = String.format("SELECT * FROM users WHERE name='%s' AND pass='%s'", name, pass);
@@ -208,9 +243,10 @@ public class ChatServer extends Server {
 
     /**
      * Erstellt einen neuen Benutzer in der Datenbank und loggt den Client in jenen
-     * ein
+     * ein. Vorher wird allerdings überprüft, ob dieser Benutzername bereits
+     * existiert.
      * 
-     * @param ip Client ip
+     * @param ip   Client ip
      * @param port Client port
      * @param name Benutzername vom neuen Benutzer
      * @param pass Passwort vom neuen Benutzer
@@ -254,6 +290,15 @@ public class ChatServer extends Server {
         }
     }
 
+    /**
+     * Loggt den Client/Benutzer in dem gegebenen Raum ein falls er existiert und
+     * das Passwort stimmt
+     * 
+     * @param ip
+     * @param port
+     * @param name
+     * @param pass
+     */
     public void loginRoom(String ip, int port, String name, String pass) {
         var l = LocalDateTime.now();
         java.sql.Date dt = new java.sql.Date(l.toInstant(ZoneOffset.UTC).toEpochMilli());
@@ -306,6 +351,13 @@ public class ChatServer extends Server {
         }
     }
 
+    /**
+     * Löscht den Benutzer aus dem Raum sodass er keine Nachrichten des Raums mehr
+     * gesendet bekommt
+     * 
+     * @param clientIp
+     * @param clientPort
+     */
     public void logoutRoom(String clientIp, int clientPort) {
         String ipp = clientIp + ";" + clientPort;
         int user = 0;
@@ -340,6 +392,9 @@ public class ChatServer extends Server {
         send(clientIp, clientPort, "loggedout");
     }
 
+    /**
+     * Verarbeitet eine Nachricht eines Clients
+     */
     @Override
     public void processMessage(String clientIp, int clientPort, String message) {
         String[] splitMessage = message.split(";");

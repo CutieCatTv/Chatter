@@ -4,6 +4,10 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+/**
+ * Diese Klasse stellt einen Client dar, welcher eine Verbindung zum Server und
+ * zu einem Interface hat
+ */
 class ChatClient extends Client {
     Boolean loggedInRoom;
     String loginRoom;
