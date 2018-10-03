@@ -2,7 +2,7 @@ package com.voxldavid.chatter;
 
 /**
  * Verbindet den Client mit dem Benutzer vor dem Bildschirm und macht die
- * richtigen Sachen (ruft die richtigen Methoden des Clients auf) wann sie
+ * richtigen Sachen (ruft die richtigen Methoden des Clients auf) wenn sie
  * gemacht werden sollen
  */
 interface Interface {

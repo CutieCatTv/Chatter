@@ -45,7 +45,7 @@ public class ChatGUI extends JFrame implements Interface {
         int x = (d.width - getSize().width) / 2;
         int y = (d.height - getSize().height) / 2;
         setLocation(x, y);
-        setTitle("ChatGUI");
+        setTitle("Chat");
         setResizable(false);
         Container cp = getContentPane();
         cp.setLayout(null);
@@ -99,7 +99,7 @@ public class ChatGUI extends JFrame implements Interface {
                     "Enter Server address", JOptionPane.PLAIN_MESSAGE);
             if ((ip == null) || (ip.length() < 1))
                 continue;
-            client = new ChatClient(this, ip.trim(), 8080);
+            client = new ChatClient(this, ip.trim(), 1000);
             connected = client.istVerbunden();
         }
 
@@ -127,11 +127,12 @@ public class ChatGUI extends JFrame implements Interface {
     }
 
     public void receiveMessage(String msg, String source, String time) {
-        jTextArea1.setText(jTextArea1.getText() + "\n<" + source + ", " + new Date(time).toGMTString() + "> " + msg);
+        jTextArea1.setText(jTextArea1.getText() + "\n<" + source + ", " + time + "> " + msg);
     }
 
     public void bSenden_ActionPerformed(ActionEvent evt) {
-        client.sendMessage(jTextArea2.getText());
+    	client.sendMessage(jTextArea2.getText());
+    	jTextArea2.setText("");
     } // end of bSenden_ActionPerformed
 
     public void jButton1_ActionPerformed(ActionEvent evt) {

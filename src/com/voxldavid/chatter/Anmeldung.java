@@ -19,14 +19,13 @@ public class Anmeldung extends JFrame {
     private JLabel lPasswort1 = new JLabel();
     private JLabel lAnmeldung = new JLabel();
     private JButton bAnmelden = new JButton();
-    private JTextArea ausgabe = new JTextArea("");
-    private JScrollPane ausgabeScrollPane = new JScrollPane(ausgabe);
     private JButton bRegistrieren = new JButton();
     String b;
     String p1;
     private JTextField jTextField1 = new JTextField();
     private JPasswordField jPasswordField1 = new JPasswordField();
     ChatGUI gui;
+	private JLabel ausgabe;
     // Ende Attribute
 
     public Anmeldung(ChatGUI c) {
@@ -35,7 +34,7 @@ public class Anmeldung extends JFrame {
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         int frameWidth = 383;
         int frameHeight = 500;
-        setSize(frameWidth, frameHeight);
+        setSize(383, 305);
         Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
         int x = (d.width - getSize().width) / 2;
         int y = (d.height - getSize().height) / 2;
@@ -67,9 +66,6 @@ public class Anmeldung extends JFrame {
             }
         });
         cp.add(bAnmelden);
-        ausgabeScrollPane.setBounds(112, 224, 249, 41);
-        ausgabe.setEditable(false);
-        cp.add(ausgabeScrollPane);
         bRegistrieren.setBounds(112, 184, 249, 33);
         bRegistrieren.setText("Registrieren");
         bRegistrieren.setMargin(new Insets(2, 2, 2, 2));
@@ -83,6 +79,10 @@ public class Anmeldung extends JFrame {
         cp.add(jTextField1);
         jPasswordField1.setBounds(112, 96, 249, 41);
         cp.add(jPasswordField1);
+        
+        ausgabe = new JLabel("");
+        ausgabe.setBounds(112, 228, 249, 33);
+        getContentPane().add(ausgabe);
         // Ende Komponenten
 
         setVisible(true);
@@ -103,7 +103,7 @@ public class Anmeldung extends JFrame {
             if (p1.equals("")) {
                 ausgabe.setText("Bitte Passwort eingeben!");
             } else {
-                ausgabe.setText("Anmeldung erfolgt...");
+                ausgabe.setText("Benutzername oder Passwort falsch!");
             }
         }
 
@@ -111,16 +111,14 @@ public class Anmeldung extends JFrame {
     } // end of bAnmelden_ActionPerformed
 
     public void bRegistrieren_ActionPerformed(ActionEvent evt) {
-        String name = (String) JOptionPane.showInputDialog(this, "Raumname eingeben", "Chatroom Name",
+        String name = (String) JOptionPane.showInputDialog(this, "Benutzername", "Benutzername",
                 JOptionPane.PLAIN_MESSAGE);
         if ((name == null) || (name.length() < 1))
             return;
-        String pass = (String) JOptionPane.showInputDialog(this, "Raumpasswort eingeben (leer für keins)",
-                "Chatroom Passwort", JOptionPane.PLAIN_MESSAGE);
+        String pass = (String) JOptionPane.showInputDialog(this, "Passwort eingeben",
+                "Passwort", JOptionPane.PLAIN_MESSAGE);
         if ((pass == null) || (pass.length() < 1))
             return;
         gui.client.registerUser(name, pass);
     } // end of bRegistrieren_ActionPerformed
-
-    // Ende Methoden
 } // end of class Anmeldung

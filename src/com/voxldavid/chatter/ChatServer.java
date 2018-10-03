@@ -1,6 +1,7 @@
 package com.voxldavid.chatter;
 
 import java.sql.*;
+import java.sql.Connection;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
@@ -37,7 +38,7 @@ public class ChatServer extends Server {
     }
 
     public ChatServer() {
-        super(8080);
+        super(1000);
 
         chatRoomIdCounter = 1;
         userIdCounter = 1;
@@ -107,7 +108,7 @@ public class ChatServer extends Server {
     public void createRoom(String name, String pass) {
         String sql = String.format("SELECT name FROM chatrooms WHERE name='%s';", name);
 
-        try (var c = connect()) {
+        try (Connection c = connect()) {
             Statement stmt = c.createStatement();
 
             if (stmt.executeQuery(sql).getFetchSize() == 0) {
@@ -136,7 +137,7 @@ public class ChatServer extends Server {
 
                 Statement roomStatement = c.createStatement();
                 sql = "SELECT * FROM chatrooms";
-                var roomResult = roomStatement.executeQuery(sql);
+                ResultSet roomResult = roomStatement.executeQuery(sql);
                 String msgString = "rooms";
                 while (roomResult.next()) {
                     msgString += ";" + roomResult.getString("name")
@@ -165,10 +166,10 @@ public class ChatServer extends Server {
      * @param message
      */
     public void receiveChatMessage(String chatRoomName, String chatRoomPass, String source, String message) {
-        var l = LocalDateTime.now();
+        LocalDateTime l = LocalDateTime.now();
         java.sql.Date dt = new java.sql.Date(l.toInstant(ZoneOffset.UTC).toEpochMilli());
 
-        try (var c = connect()) {
+        try (Connection c = connect()) {
             Statement stmt = c.createStatement();
 
             String sql = String.format("SELECT chatRoomID FROM chatrooms WHERE name='%s' AND pass='%s';", chatRoomName,
@@ -215,19 +216,19 @@ public class ChatServer extends Server {
      * @param pass
      */
     public void loginUser(String ip, int port, String name, String pass) {
-        try (var c = connect()) {
+        try (Connection c = connect()) {
             String sql = String.format("SELECT * FROM users WHERE name='%s' AND pass='%s'", name, pass);
 
             Statement s = c.createStatement();
 
-            var result = s.executeQuery(sql);
+            ResultSet result = s.executeQuery(sql);
 
             if (result.next()) {
                 userIP.put(result.getInt("id"), ip + ";" + port);
                 String msgString = "loggedinuser;" + result.getString("name");
                 Statement roomStatement = c.createStatement();
                 sql = "SELECT * FROM chatrooms";
-                var roomResult = roomStatement.executeQuery(sql);
+                ResultSet roomResult = roomStatement.executeQuery(sql);
                 while (roomResult.next()) {
                     msgString += ";" + roomResult.getString("name")
                             + (roomResult.getString("pass").equals("") ? "+" : "-");
@@ -252,12 +253,12 @@ public class ChatServer extends Server {
      * @param pass Passwort vom neuen Benutzer
      */
     public void registerUser(String ip, int port, String name, String pass) {
-        try (var c = connect()) {
+        try (Connection c = connect()) {
             String sql = String.format("SELECT * FROM users WHERE name='%s' AND pass='%s'", name, pass);
 
             Statement s = c.createStatement();
 
-            var result = s.executeQuery(sql);
+            ResultSet result = s.executeQuery(sql);
 
             if (!result.next()) {
                 sql = "INSERT INTO users(name, pass, id) VALUES(?,?,?);";
@@ -276,7 +277,7 @@ public class ChatServer extends Server {
                 String msgString = "loggedinuser;" + name;
                 sql = "SELECT * FROM chatrooms";
                 Statement roomStatement = c.createStatement();
-                var roomResult = roomStatement.executeQuery(sql);
+                ResultSet roomResult = roomStatement.executeQuery(sql);
                 while (roomResult.next()) {
                     msgString += ";" + roomResult.getString("name")
                             + (roomResult.getString("pass").equals("") ? "+" : "-");
@@ -300,12 +301,12 @@ public class ChatServer extends Server {
      * @param pass
      */
     public void loginRoom(String ip, int port, String name, String pass) {
-        var l = LocalDateTime.now();
+        LocalDateTime l = LocalDateTime.now();
         java.sql.Date dt = new java.sql.Date(l.toInstant(ZoneOffset.UTC).toEpochMilli());
 
-        try (var c = connect()) {
+        try (Connection c = connect()) {
             int user = 0;
-            for (var i : userIP.keySet()) {
+            for (int i : userIP.keySet()) {
                 if (userIP.get(i).equals(ip + ";" + port)) {
                     user = i;
                 }
@@ -317,11 +318,11 @@ public class ChatServer extends Server {
 
             String sql = String.format("SELECT * FROM chatrooms WHERE name='%s'", name, pass);
 
-            var result = c.createStatement().executeQuery(sql);
+            ResultSet result = c.createStatement().executeQuery(sql);
 
             sql = String.format("SELECT name FROM users WHERE id='%s'", Integer.toString(user));
 
-            var userResult = c.createStatement().executeQuery(sql);
+            ResultSet userResult = c.createStatement().executeQuery(sql);
 
             userResult.next();
 
@@ -362,7 +363,7 @@ public class ChatServer extends Server {
         String ipp = clientIp + ";" + clientPort;
         int user = 0;
 
-        for (var i : userIP.keySet()) {
+        for (int i : userIP.keySet()) {
             if (userIP.get(i).equals(ipp)) {
                 user = i;
                 break;
